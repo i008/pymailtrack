@@ -42,8 +42,16 @@ class User(db.Model, UserMixin):
         return '<User %r>' % self.username
 
 
+
+class TrackingCode(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String())
+
+
 class Logs(db.Model):
+
     id = db.Column(db.Integer(), primary_key=True)
     ip = db.Column(db.String())
     time = db.Column(db.DateTime())
     trackhash = db.Column(db.String())
+

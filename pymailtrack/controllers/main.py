@@ -5,7 +5,7 @@ import uuid
 import datetime
 
 from pymailtrack.extensions import cache
-from pymailtrack.forms import LoginForm
+from pymailtrack.forms import LoginForm, TrackForm
 from pymailtrack.models import User, Logs, db
 
 main = Blueprint('main', __name__)
@@ -55,10 +55,19 @@ def tracking_image(trackhash):
     return send_file('sample_image.png')
 
 
+@main.route('/generate_track', methods=["GET", "POST"])
+@login_required
+def generate_track():
+    trackform = TrackForm()
+
+    return render_template("gentrackform.html", form=trackform)
+
+
+
 @main.route('/trackingcode')
 def generate_tracking_code():
-    unique_id = str(uuid.uuid4())
-    track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('main.tracking_image', trackhash=unique_id)
+    unique_id = str(uuid.uuid4())[:7]
+    track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('.tracking_image', trackhash=unique_id)
     return jsonify(
         {'tracking_code':"<img width='1' height='1' src={0}>".format(track_url)}
     )

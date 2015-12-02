@@ -28,3 +28,9 @@ class LoginForm(Form):
             return False
 
         return True
+
+
+class TrackForm(Form):
+    description = StringField(u'description')
+    recipient = StringField(u'recipient email')
+
