@@ -56,8 +56,10 @@ class TrackingCode(db.Model):
     description = db.Column(db.String(), default='noinfo')
     recipient = db.Column(db.String(), default='noinfo')
     trackhash = db.Column(db.String())
+    time = db.Column(db.DateTime(), default=datetime.datetime.utcnow())
 
     lr = db.relationship('Logs', backref='logs', lazy='dynamic')
+
 
 class Logs(db.Model):
     __tablename__ = 'logs'
@@ -65,5 +67,6 @@ class Logs(db.Model):
     code_id = db.Column(db.Integer(), db.ForeignKey('trackingcode.id'), nullable=False)
     ip = db.Column(db.String())
     time = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    user_agent = db.Column(db.String())
 
 

@@ -28,3 +28,8 @@ test:
 
 kill:
 	sudo fuser -k 5000/tcp   
+
+
+dropdb:
+	rm database.db
+	python manage.py createdb

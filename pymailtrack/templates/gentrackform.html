@@ -27,9 +27,10 @@
                     {{ form.recipient(class_="form-control") }}
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
-                        <div>
-                <textarea rows="2" cols="75">{{trackcode}}</textarea>
-            </div>
+                <div class="form-group">
+                    <label for="code">Your tracking code:</label>
+                    <textarea class="form-control" id="code" rows="2" cols="75">{{trackcode}}</textarea>
+                </div>
             </form>
         </div>
     </div>

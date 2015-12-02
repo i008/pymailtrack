@@ -44,18 +44,22 @@ def logout():
     return redirect(url_for(".home"))
 
 
-@main.route("/restricted")
-@login_required
-def restricted():
-    return "You can only see this if you are logged in!", 200
+# @main.route("/restricted")
+# @login_required
+# def restricted():
+#     return "You can only see this if you are logged in!", 200
 
+@main.route('/mytrackings')
+@login_required
+def mytrackings():
+    return "my trackings", 200
 
 @main.route('/track/<trackhash>')
 def tracking_image(trackhash):
-    ip = request.remote_addr
-    time = datetime.datetime.utcnow()
+    print str(request.user_agent)
+    remote_ip = request.remote_addr
     code_id = TrackingCode.query.filter(TrackingCode.trackhash == trackhash).one().id
-    l = Logs(ip=ip, code_id=code_id, time=time)
+    l = Logs(ip=remote_ip, code_id=code_id, user_agent=str(request.user_agent))
     db.session.add(l)
     db.session.commit()
     return send_file('tr.png')
