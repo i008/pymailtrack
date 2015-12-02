@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+    {% for track in mt %}
+        <li>
+            <a href="{{ url_for('.mytrackings',track=track.trackhash) }}">Details</a> {{ track.description }} {{ track.recipient }} {{ track.time }}
+        </li>
+    {% endfor %}
+{% endblock %}

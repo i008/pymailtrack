@@ -13,7 +13,7 @@ def testapp(request):
     db.create_all()
 
     if getattr(request.module, "create_user", True):
-        admin = User('admin', 'sorcery')
+        admin = User('admin', 'supersafepassword')
         db.session.add(admin)
         db.session.commit()
 

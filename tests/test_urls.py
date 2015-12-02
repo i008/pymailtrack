@@ -26,15 +26,15 @@ class TestURLs:
         rv = testapp.get('/logout')
         assert rv.status_code == 302
 
-    def test_restricted_logged_out(self, testapp):
+    def test_mytrackings_logged_out(self, testapp):
         """ Tests if the restricted page returns a 302
             if the user is logged out
         """
 
-        rv = testapp.get('/restricted')
+        rv = testapp.get('/mytrackings')
         assert rv.status_code == 302
 
-    def test_restricted_logged_in(self, testapp):
+    def test_mytrackings_logged_in(self, testapp):
         """ Tests if the restricted page returns a 200
             if the user is logged in
         """
@@ -44,5 +44,5 @@ class TestURLs:
             password="supersafepassword"
         ), follow_redirects=True)
 
-        rv = testapp.get('/restricted')
+        rv = testapp.get('/mytrackings')
         assert rv.status_code == 200

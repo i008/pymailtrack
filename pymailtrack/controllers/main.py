@@ -7,11 +7,11 @@ from flask.ext.login import (
 )
 
 import uuid
-import datetime
+
 
 from pymailtrack.extensions import cache
 from pymailtrack.forms import LoginForm, TrackForm
-from pymailtrack.models import User, Logs,TrackingCode, db
+from pymailtrack.models import User, Logs, TrackingCode, db
 
 main = Blueprint('main', __name__)
 
@@ -49,10 +49,18 @@ def logout():
 # def restricted():
 #     return "You can only see this if you are logged in!", 200
 
+@main.route('/mytrackings/<track>')
 @main.route('/mytrackings')
 @login_required
-def mytrackings():
-    return "my trackings", 200
+def mytrackings(track=None):
+    if not track:
+        current_app.logger.info(
+            [t.trackhash for t in TrackingCode.query.filter(TrackingCode.user_id == current_user.id)])
+        mt = TrackingCode.query.filter(TrackingCode.user_id == current_user.id)
+        return render_template('mytrackings.html', mt=mt)
+    else:
+        return render_template('trackingdetails.html')
+
 
 @main.route('/track/<trackhash>')
 def tracking_image(trackhash):
@@ -84,10 +92,9 @@ def generate_track():
         track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('.tracking_image', trackhash=trackhash)
         trackcode = "<img width='0' height='0' src={0}>".format(track_url)
 
-        return render_template("gentrackform.html",form=trackform, trackcode=trackcode)
+        return render_template("gentrackform.html", form=trackform, trackcode=trackcode)
 
     return render_template("gentrackform.html", form=trackform, trackcode='')
-
 
 
 @main.route('/yourtrack', methods=['GET'])
@@ -95,15 +102,6 @@ def generate_track():
 def yourtrack():
     return render_template("yourtrack.html")
 
-
-
-@main.route('/trackingcode')
-def generate_tracking_code():
-    unique_id = str(uuid.uuid4())[:7]
-    track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('.tracking_image', trackhash=unique_id)
-    return jsonify(
-        {'tracking_code':"<img width='0' height='0' src={0}>".format(track_url)}
-    )
 
 @main.route('/plg')
 def playground():

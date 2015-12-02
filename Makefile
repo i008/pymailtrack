@@ -33,3 +33,6 @@ kill:
 dropdb:
 	rm database.db
 	python manage.py createdb
+
+run:
+	python manage.py runserver
