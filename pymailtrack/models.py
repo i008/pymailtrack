@@ -2,10 +2,14 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import datetime
+
 db = SQLAlchemy()
 
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String())
     password = db.Column(db.String())
@@ -41,17 +45,25 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.username
 
+    tc = db.relationship('TrackingCode', backref='user', lazy='dynamic')
 
 
 class TrackingCode(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String())
+    __tablename__ = 'trackingcode'
 
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    description = db.Column(db.String(), default='noinfo')
+    recipient = db.Column(db.String(), default='noinfo')
+    trackhash = db.Column(db.String())
+
+    lr = db.relationship('Logs', backref='logs', lazy='dynamic')
 
 class Logs(db.Model):
-
+    __tablename__ = 'logs'
     id = db.Column(db.Integer(), primary_key=True)
+    code_id = db.Column(db.Integer(), db.ForeignKey('trackingcode.id'), nullable=False)
     ip = db.Column(db.String())
-    time = db.Column(db.DateTime())
-    trackhash = db.Column(db.String())
+    time = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+
 

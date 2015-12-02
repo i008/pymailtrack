@@ -1,5 +1,5 @@
-{%extends "base.html" %}
-{%block body %}
+{% extends "base.html" %}
+{% block body %}
     <h1 class="text-center">Tracking Details</h1>
 
     <div class="row">
@@ -18,17 +18,20 @@
                     {{ form.description(class_="form-control") }}
                 </div>
                 <div class="form-group">
-                {{ form.recipient.label }}
-                {% if form.recipient.errors %}
-                    {% for e in form.recipient.errors %}
-                        <p class="help-block">{{ e }}</p>
-                    {% endfor %}
-                {% endif %}
-                {{ form.recipient(class_="form-control") }}
+                    {{ form.recipient.label }}
+                    {% if form.recipient.errors %}
+                        {% for e in form.recipient.errors %}
+                            <p class="help-block">{{ e }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {{ form.recipient(class_="form-control") }}
                 </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                        <div>
+                <textarea rows="2" cols="75">{{trackcode}}</textarea>
+            </div>
             </form>
         </div>
-
     </div>
-{%endblock %}
+
+{% endblock %}

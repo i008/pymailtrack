@@ -5,7 +5,7 @@ import os
 from flask.ext.script import Manager, Server
 from flask.ext.script.commands import ShowUrls, Clean
 from pymailtrack import create_app
-from pymailtrack.models import db, User
+from pymailtrack.models import db, User, Logs, TrackingCode
 
 # default to dev config because no one should use this in
 # production anyway
@@ -25,7 +25,7 @@ def make_shell_context():
         in the context of the app
     """
 
-    return dict(app=app, db=db, User=User)
+    return dict(app=app, db=db, User=User, Logs=Logs, Track=TrackingCode)
 
 
 @manager.command
@@ -33,8 +33,10 @@ def createdb():
     """ Creates a database with all of the tables defined in
         your SQLAlchemy models
     """
-
     db.create_all()
+    u = User(username='admin', password='sorcery')
+    db.session.add(u)
+    db.session.commit()
 
 if __name__ == "__main__":
     manager.run()

@@ -1,12 +1,17 @@
-from flask import Blueprint, render_template, flash, request, redirect, url_for, send_file, jsonify, current_app
-from flask.ext.login import login_user, logout_user, login_required
+from flask import (
+    Blueprint, render_template, flash, request,
+    redirect, url_for, send_file, jsonify, current_app
+)
+from flask.ext.login import (
+    login_user, logout_user, login_required, current_user
+)
 
 import uuid
 import datetime
 
 from pymailtrack.extensions import cache
 from pymailtrack.forms import LoginForm, TrackForm
-from pymailtrack.models import User, Logs, db
+from pymailtrack.models import User, Logs,TrackingCode, db
 
 main = Blueprint('main', __name__)
 
@@ -49,18 +54,42 @@ def restricted():
 def tracking_image(trackhash):
     ip = request.remote_addr
     time = datetime.datetime.utcnow()
-    l = Logs(ip=ip, trackhash=trackhash, time=time)
+    code_id = TrackingCode.query.filter(TrackingCode.trackhash == trackhash).one().id
+    l = Logs(ip=ip, code_id=code_id, time=time)
     db.session.add(l)
     db.session.commit()
-    return send_file('sample_image.png')
+    return send_file('tr.png')
 
 
 @main.route('/generate_track', methods=["GET", "POST"])
 @login_required
 def generate_track():
     trackform = TrackForm()
+    if trackform.validate_on_submit():
+        trackhash = str(uuid.uuid4())[:7]
 
-    return render_template("gentrackform.html", form=trackform)
+        tc = TrackingCode(
+            description=trackform.description.data,
+            recipient=trackform.recipient.data,
+            trackhash=trackhash,
+            user_id=current_user.id
+        )
+
+        db.session.add(tc)
+        db.session.commit()
+        track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('.tracking_image', trackhash=trackhash)
+        trackcode = "<img width='0' height='0' src={0}>".format(track_url)
+
+        return render_template("gentrackform.html",form=trackform, trackcode=trackcode)
+
+    return render_template("gentrackform.html", form=trackform, trackcode='')
+
+
+
+@main.route('/yourtrack', methods=['GET'])
+@login_required
+def yourtrack():
+    return render_template("yourtrack.html")
 
 
 
@@ -69,7 +98,7 @@ def generate_tracking_code():
     unique_id = str(uuid.uuid4())[:7]
     track_url = current_app.config.get('BASE_SERVER_NAME') + url_for('.tracking_image', trackhash=unique_id)
     return jsonify(
-        {'tracking_code':"<img width='1' height='1' src={0}>".format(track_url)}
+        {'tracking_code':"<img width='0' height='0' src={0}>".format(track_url)}
     )
 
 @main.route('/plg')

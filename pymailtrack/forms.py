@@ -31,6 +31,6 @@ class LoginForm(Form):
 
 
 class TrackForm(Form):
-    description = StringField(u'description')
-    recipient = StringField(u'recipient email')
+    description = StringField(u'description (optional)')
+    recipient = StringField(u'recipient email (optional)')
 
