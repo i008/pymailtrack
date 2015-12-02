@@ -36,3 +36,6 @@ dropdb:
 
 run:
 	python manage.py runserver
+
+blabla:
+	;/
