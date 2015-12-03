@@ -7,6 +7,7 @@ from flask.ext.login import (
 )
 
 import uuid
+import pandas as pd
 
 
 from pymailtrack.extensions import cache
@@ -59,7 +60,14 @@ def mytrackings(track=None):
         mt = TrackingCode.query.filter(TrackingCode.user_id == current_user.id)
         return render_template('mytrackings.html', mt=mt)
     else:
-        return render_template('trackingdetails.html')
+        df = pd.read_sql(
+                str(db.session.query(Logs, TrackingCode).join(TrackingCode).statement),
+                db.engine
+        )
+        df_html = df[df.trackhash == track].to_html()
+        # return df_html
+        return render_template('trackingdetails.html', df=df_html)
+
 
 
 @main.route('/track/<trackhash>')
